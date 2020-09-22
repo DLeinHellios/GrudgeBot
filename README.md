@@ -1,4 +1,6 @@
-# GrudgeBot - A bot for the GrudgeMatch Discord server
+# GrudgeBot
+
+A bot for the GrudgeMatch Discord server
 
 ## Usage
 
@@ -9,4 +11,5 @@
 
 ## Requirements
 [Discord Token](https://discordapp.com/developers/applications/)
+
 See .env.example
