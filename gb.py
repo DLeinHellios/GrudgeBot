@@ -5,6 +5,7 @@
 # Provided under the Apache License 2.0
 
 import discord, os, sys, sqlite3
+from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -80,44 +81,50 @@ class Embedder:
             return embed
 
 
+#=======================================================
 
-class Client(discord.Client):
-    async def on_ready(self):
-        print('Successfully logged in as {0.user}'.format(client))
-
-    async def on_message(self, message):
-        # Ignore self messages
-        if message.author == client.user:
-            return
-
-        # Send embed of available game args
-        if message.content.startswith('!games'):
-            msg = embedder.format_game_args(data.query_game_args())
-            await message.channel.send(embed=msg)
-
-        # Send embed of game information
-        if message.content.startswith('!info'):
-            # Read args
-            game = message.content.split(" ", 1)
-            if len(game) > 1:
-                game = game[1]
-            else:
-                # No game specified
-                return
-
-            # Send message
-            gameData = data.query_games(game)
-            if gameData != None:
-                msg = embedder.format_games(data.query_games(game))
-                await message.channel.send(embed=msg)
-            else:
-                await message.channel.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
-
-
-
+bot = commands.Bot(command_prefix="!", description="GrudgeBot - Has commands to up your fighting game knowledge")
 embedder = Embedder()
 data = Data()
 
+
+@bot.event
+async def on_ready():
+    '''Login message'''
+    print('Successfully logged in as:')
+    print("User: " + bot.user.name)
+    print("ID: " + str(bot.user.id))
+    print('==========================')
+
+
+@bot.command()
+async def games(ctx):
+    '''Displays supported game arguments'''
+    msg = embedder.format_game_args(data.query_game_args())
+    await ctx.send(embed=msg)
+
+
+@bot.command()
+async def info(ctx, game):
+    '''Accepts game abbreviation, displays game info'''
+    gameData = data.query_games(game)
+    if gameData != None:
+        msg = embedder.format_games(data.query_games(game))
+        await ctx.send(embed=msg)
+    else:
+        print("Unsupported game requested: " + game)
+        await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    '''Handles command errors'''
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send("Sorry, I dont know that command")
+        
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Please provide an argument for that command")
+
+
 if __name__ == "__main__":
-    client = Client()
-    client.run(os.environ['DISCORD_TOKEN'])
+    bot.run(os.environ['DISCORD_TOKEN'])
