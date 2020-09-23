@@ -9,7 +9,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
-
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 class Data:
     def __init__(self):
@@ -114,7 +114,6 @@ async def info(ctx, game):
         msg = embedder.format_games(data.query_games(game))
         await ctx.send(embed=msg)
     else:
-        print("Unsupported game requested: " + game)
         await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
 
 
@@ -126,6 +125,9 @@ async def on_command_error(ctx, error):
 
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("Please provide argument(s) for that command")
+
+    else:
+        raise error
 
 
 if __name__ == "__main__":
