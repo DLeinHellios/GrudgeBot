@@ -44,7 +44,7 @@ class Embedder:
         embed = discord.Embed(title="**Supported Games**", colour=discord.Colour(0xef4535))
 
         for command in commands:
-            embed.add_field(name=command[0], value="`" + command[1] + "`", inline=False)
+            embed.add_field(name=command[0], value="`" + command[1] + "`", inline=True)
 
         return embed
 
@@ -70,12 +70,14 @@ class Embedder:
 
             # Links field
             links = ''
+            if gameData[7] != None:
+                links += '[Character Data](' + gameData[7] + ') | '
             if gameData[6] != None:
-                links += gameData[6] + " | "
+                links += '[Move List](' + gameData[6] + ') | '
 
             if links != '':
                 links = links[:-3]
-                embed.add_field(name="Links", value="[Movelist](" + gameData[6] + ")", inline=False)
+                embed.add_field(name="Links", value=links, inline=False)
 
             # Return formatted embed object
             return embed
@@ -121,9 +123,9 @@ async def on_command_error(ctx, error):
     '''Handles command errors'''
     if isinstance(error, commands.CommandNotFound):
         await ctx.send("Sorry, I dont know that command")
-        
+
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("Please provide an argument for that command")
+        await ctx.send("Please provide argument(s) for that command")
 
 
 if __name__ == "__main__":
