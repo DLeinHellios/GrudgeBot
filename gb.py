@@ -4,7 +4,7 @@
 # Logo by ZN
 # Provided under the Apache License 2.0
 
-import discord, os, sys, sqlite3
+import discord, os, sys, sqlite3, random
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -35,6 +35,40 @@ class Data:
 
         if gameData != []:
             return gameData[0]
+
+
+    def random_taunt(self):
+        '''Returns a random taunt from database'''
+        self.c.execute('SELECT body FROM taunts')
+        taunts = self.c.fetchall()
+
+        if len(taunts) == 0:
+            return "I got nothin..."
+
+        return random.choice(taunts)[0]
+
+
+    def add_taunt(self, author, taunt):
+        '''Saves a new taunt to to the database, returns True is taunt is added'''
+        # Check existing
+        self.c.execute('SELECT body from taunts')
+        taunts = self.c.fetchall()
+
+        for t in taunts:
+            if taunt == t[0]:
+                return False
+
+        # Add taunt
+        self.c.execute('INSERT INTO taunts ("author", "body") VALUES (?, ?)', (author, taunt))
+        self.db.commit()
+
+        return True
+
+
+    def clear_taunts(self):
+        '''Deletes all taunts'''
+        self.c.execute('DELETE FROM taunts')
+        self.db.commit()
 
 
 
@@ -85,7 +119,7 @@ class Embedder:
 
 #=======================================================
 
-bot = commands.Bot(command_prefix="!", description="GrudgeBot - Has commands to up your fighting game knowledge")
+bot = commands.Bot(command_prefix="!", description="GrudgeBot - I know some fighting game stuff")
 embedder = Embedder()
 data = Data()
 
@@ -101,14 +135,14 @@ async def on_ready():
 
 @bot.command()
 async def games(ctx):
-    '''Displays supported game arguments'''
+    '''Displays all supported games and their abbreviations'''
     msg = embedder.format_game_args(data.query_game_args())
     await ctx.send(embed=msg)
 
 
 @bot.command()
 async def info(ctx, game):
-    '''Accepts game abbreviation, displays game info'''
+    '''Displays game info and links, requires a game abbreviation (i.e., !game <abbr>)'''
     gameData = data.query_games(game)
     if gameData != None:
         msg = embedder.format_games(data.query_games(game))
@@ -117,14 +151,41 @@ async def info(ctx, game):
         await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
 
 
+@bot.command()
+async def taunt(ctx):
+    '''Sends a random taunt'''
+    await ctx.send(data.random_taunt())
+
+
+@bot.command(name="addtaunt", pass_context=True)
+@commands.has_permissions(ban_members=True)
+async def add_new_taunt(ctx, *, taunt):
+    '''Adds a new taunt, usable by moderators and administrators only'''
+    if data.add_taunt(str(ctx.message.author), taunt):
+        await ctx.send('I\'ve added the taunt "{}" - it had better be funny.'.format(taunt))
+    else:
+        await ctx.send('That one\'s in there already, stupid.')
+
+
+@bot.command(name="notaunts", pass_context=True)
+@commands.has_permissions(ban_members=True)
+async def remove_all_taunts(ctx):
+    '''Removes all taunts in one big go. Only usable by mods and admins'''
+    data.clear_taunts()
+    await ctx.send("I've gone ahead and taken out the trash")
+
+
 @bot.event
 async def on_command_error(ctx, error):
     '''Handles command errors'''
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send("Sorry, I dont know that command")
+        await ctx.send("Sorry, I dont know that command.")
+
+    elif isinstance(error, commands.MissingPermissions):
+        await ctx.send("You are not permitted to use that command.")
 
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("Please provide argument(s) for that command")
+        await ctx.send("Please provide argument(s) for that command.")
 
     else:
         raise error
