@@ -1,11 +1,11 @@
 # Command cogs for GrudgeBot
 
-import discord
+import discord, random
 from discord.ext import commands
 from src import data, embedder
 
 class Information(commands.Cog):
-    '''Commands for getting game information'''
+    '''Commands for display information'''
     def __init__(self, bot):
         self.bot = bot
 
@@ -19,7 +19,7 @@ class Information(commands.Cog):
 
     @commands.command()
     async def info(self, ctx, game):
-        '''Displays game info and links, requires a game abbreviation (i.e., !game <abbr>)'''
+        '''Displays game info and links, requires a game abbreviation'''
         gameData = data.query_games(game.lower())
         if gameData != None:
             msg = embedder.format_games(data.query_games(game.lower()))
@@ -29,7 +29,7 @@ class Information(commands.Cog):
 
 
 
-class Taunts(commands.Cog):
+class Taunt(commands.Cog):
     '''Commands to talk shit'''
     def __init__(self, bot):
         self.bot = bot
@@ -44,7 +44,7 @@ class Taunts(commands.Cog):
     @commands.command(name="add-taunt", pass_context=True)
     @commands.has_permissions(ban_members=True)
     async def add_new_taunt(self, ctx, *, taunt):
-        '''Adds a new taunt, usable by moderators and administrators only'''
+        '''(Mod/Admin) Adds a new taunt'''
         if data.add_taunt(str(ctx.message.author), taunt):
             await ctx.send('I\'ve added the taunt "{}" - it had better be funny.'.format(taunt))
         else:
@@ -54,6 +54,31 @@ class Taunts(commands.Cog):
     @commands.command(name="no-taunts", pass_context=True)
     @commands.has_permissions(ban_members=True)
     async def remove_all_taunts(self, ctx):
-        '''Removes all taunts in one big go. Only usable by mods and admins'''
+        '''(Mod/Admin) Clears taunt list'''
         data.clear_taunts()
         await ctx.send("I've gone ahead and taken out the trash")
+
+
+
+class Randomizer(commands.Cog):
+    '''Commands for randomization utilities'''
+    def __init__(self, bot):
+        self.bot = bot
+
+
+    @commands.command()
+    async def flip(self, ctx):
+        '''Flips a coin, heads or tails'''
+        await ctx.send("{} flips **{}**".format(ctx.author.mention, random.choice(["heads","tails"])))
+
+
+    @commands.command()
+    async def roll(self, ctx, max):
+        '''Rolls a random number, 1-max'''
+        try:
+            max = int(max)
+            roll = random.randint(1, max)
+            await ctx.send("{} rolls **{}**".format(ctx.author.mention, roll))
+
+        except:
+            await ctx.send("I need a maximum number for that")

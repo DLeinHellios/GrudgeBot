@@ -26,7 +26,8 @@ async def on_ready():
 async def on_command_error(ctx, error):
     '''Handles command errors'''
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send("Sorry, I dont know that command.")
+        # await ctx.send("Sorry, I dont know that command.") # Enable unknown command message
+        pass
 
     elif isinstance(error, commands.MissingPermissions):
         await ctx.send("You are not permitted to use that command.")
@@ -36,10 +37,11 @@ async def on_command_error(ctx, error):
 
     else:
         raise error
-
+        
 
 bot.add_cog(Information(bot))
-bot.add_cog(Taunts(bot))
+bot.add_cog(Taunt(bot))
+bot.add_cog(Randomizer(bot))
 
 
 if __name__ == "__main__":
