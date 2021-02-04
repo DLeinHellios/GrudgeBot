@@ -5,21 +5,28 @@
 # Provided under the Apache License 2.0
 
 import discord, os
-from dotenv import load_dotenv
 from src import *
 
-load_dotenv()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 bot = commands.Bot(command_prefix="!", description="GrudgeBot - I know some fighting game stuff")
+
+bot.add_cog(Information(bot))
+bot.add_cog(Taunt(bot))
+bot.add_cog(Randomizer(bot))
+bot.add_cog(Stream(bot))
 
 
 @bot.event
 async def on_ready():
-    '''Prints bot info on login'''
+    '''Handles bot login'''
     print('Successfully logged in as:')
     print("User: " + bot.user.name)
     print("ID: " + str(bot.user.id))
     print('==========================')
+
+    # Start Tasks
+    Stream.notifications.start(Stream, bot.get_channel(int(os.environ['ANNOUNCEMENT_CHANNEL'])))
+    print("Starting stream notifications...")
 
 
 @bot.event
@@ -37,11 +44,6 @@ async def on_command_error(ctx, error):
 
     else:
         raise error
-        
-
-bot.add_cog(Information(bot))
-bot.add_cog(Taunt(bot))
-bot.add_cog(Randomizer(bot))
 
 
 if __name__ == "__main__":
