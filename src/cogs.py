@@ -92,7 +92,7 @@ class Stream(commands.Cog):
 
     @tasks.loop(seconds=100)
     async def notifications(self, channel):
-        '''Gives notifications for live streams,  only supports Twitch'''
+        '''Gives notifications for live streams, only supports Twitch'''
         watchlist = data.query_twitch_logins() # List of Twitch login names
 
         if watchlist != []: # Streams are being watched, check for notifications
@@ -103,14 +103,15 @@ class Stream(commands.Cog):
                 users = twitch.get_user_data(users)
 
                 for user in users: # Send notifications for each live stream
-                    msg = 'Hey everyone! **{}** is streaming on Twitch! \nCheck them out here: {}\n'.format(user['display_name'], "https://twitch.tv/" + user['login'])
-                    await channel.send(msg)
+                    msg = embedder.format_stream_notification(user)
+                    #msg = 'Hey everyone! **{}** is streaming on Twitch! \nCheck them out here: {}\n'.format(user['display_name'], "https://twitch.tv/" + user['login'])
+                    await channel.send(embed=msg)
 
 
     @commands.command(name="add-twitch", pass_context=True)
     @commands.has_permissions(ban_members=True)
     async def add_twitch_streamer(self, ctx, id):
-        '''(Mod/Admin) Adds a Twitch streamer to notification watchlist'''
+        '''(Mod/Admin) Adds a Twitch streamer to watchlist'''
         msg = data.add_stream(id, "Twitch")
         await ctx.send(msg)
 
@@ -118,7 +119,20 @@ class Stream(commands.Cog):
     @commands.command(name="clear-twitch", pass_context=True)
     @commands.has_permissions(ban_members=True)
     async def remove_twitch_streamer(self, ctx):
-        '''(Mod/Admin) Removes all Twitch streamers from notification watchlist'''
+        '''(Mod/Admin) Clears Twitch watchlist'''
         msg = data.clear_streams("Twitch")
         twitch.live = []
         await ctx.send(msg)
+
+
+    @commands.command(name="streams")
+    async def get_streams(self, ctx):
+        '''Displays currently followed streams'''
+        logins = data.query_twitch_logins()
+
+        if logins != []:
+            msg = embedder.format_streams(twitch.get_user_data(data.query_twitch_logins()))
+            await ctx.send(embed=msg)
+
+        else:
+            await ctx.send("No streams are on my radar. That's kinda boring.")

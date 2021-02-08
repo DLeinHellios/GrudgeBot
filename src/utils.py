@@ -105,7 +105,8 @@ class Embedder:
     '''Formats Discord embed objects'''
     def format_game_args(self, commands):
         '''Accepts a list of tuples containg game names and commands, returns formatted embed'''
-        embed = discord.Embed(title="**Supported Games**", colour=discord.Colour(0xef4535))
+        embed = discord.Embed(title="Supported Games", colour=discord.Colour(0xef4535))
+        embed.set_thumbnail(url="https://dleinhellios.com/gm/logo_thumb.png")
 
         for command in commands:
             embed.add_field(name=command[0], value="`" + command[1] + "`", inline=True)
@@ -147,6 +148,34 @@ class Embedder:
             return embed
 
 
+    def format_streams(self, streamData):
+        '''Returns formatted embed for cuttently followed streams, only Twitch for now'''
+        embed = discord.Embed(title="Followed Streams", colour=discord.Colour(14378506))
+        embed.set_thumbnail(url="https://dleinhellios.com/gm/logo_thumb.png")
+
+        for stream in streamData:
+            name = stream["display_name"] + " -  https://twitch.tv/" + stream["login"]
+
+            if stream["description"] != "":
+                value = stream["description"]
+            else:
+                value = "Streams on Twitch"
+
+            embed.add_field(name=name, value=value, inline=False)
+
+        return embed
+
+
+    def format_stream_notification(self, userData):
+        '''Creates embed for Twitch notification'''
+        title = "{} is live!".format(userData["display_name"])
+        url = "https://twitch.tv/" + userData["login"]
+        description = userData["description"] + "\nWatch now at " + url
+        embed = discord.Embed(title=title, description=description, url=url, colour=discord.Colour(14378506))
+        embed.set_thumbnail(url=userData["profile_image_url"])
+
+        return embed
+
 
 class Twitch:
     '''Handles calls to Twitch API'''
@@ -156,6 +185,7 @@ class Twitch:
         self.active = True # Kills Twitch integration on auth issues
 
         self.token = self.get_token() # Get initial token
+        #print(self.token) # Get a token to re-use for debugging
         self.live = [] # List of already-live streams
 
 
@@ -197,10 +227,11 @@ class Twitch:
 
         if response.status_code == 401:
             # Token rejected, get new one
+            print('Token Rejected - Trying to get a new one')
             self.token = self.get_token()
-            print(self.token)
 
             if self.active:
+                # New token was successful
                 response = requests.get(url=url, headers=headers, params=params)
 
             else:
@@ -252,9 +283,11 @@ class Twitch:
 
         if response.status_code == 401:
             # Token rejected, get new one
+            print('Token Rejected - Trying to get a new one')
             self.token = self.get_token()
 
             if self.active:
+                # New token was successful
                 response = requests.get(url=url, headers=headers, params=params)
 
             else:
