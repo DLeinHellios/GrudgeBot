@@ -10,7 +10,7 @@ class Data:
             self.db = sqlite3.connect('data.db')
             self.c = self.db.cursor()
         except:
-            print("Cannot open database! Exiting...")
+            print("Cannot open database! Have you ran db_util.py? Exiting...")
             sys.exit()
 
 

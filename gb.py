@@ -25,7 +25,7 @@ async def on_ready():
     print('==========================')
 
     # Start Tasks
-    Stream.notifications.start(Stream, bot.get_channel(int(os.environ['ANNOUNCEMENT_CHANNEL'])))
+    Stream.notifications.start(Stream, bot.get_channel(int(os.environ['STREAM_CHANNEL'])))
     print("Starting stream notifications...")
 
 
@@ -33,7 +33,7 @@ async def on_ready():
 async def on_command_error(ctx, error):
     '''Handles command errors'''
     if isinstance(error, commands.CommandNotFound):
-        # await ctx.send("Sorry, I dont know that command.") # Enable unknown command message
+        #await ctx.send("Sorry, I dont know that command.") # Enable unknown command message
         pass
 
     elif isinstance(error, commands.MissingPermissions):
