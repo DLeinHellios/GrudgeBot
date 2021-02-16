@@ -1,11 +1,12 @@
 #db_util.py - SQLite migration utility for GrudgeBot
 
-import os, sys
+import os, sys, requests
 import sqlite3 as sql
 
 
 dbFile = "data.db"
 backupFile = "data.db.backup"
+gamedataURL = "https://dleinhellios.com/gm/game_data.json"
 
 
 def create_db(conn, cursor):
@@ -44,8 +45,8 @@ def import_old_data(conn, cursor):
 
         for taunt in tauntData:
             cursor.execute('INSERT INTO taunts ("author", "body") VALUES (?, ?)', (taunt[1], taunt[2]))
-            conn.commit()
 
+        conn.commit()
         print("> Importing taunt data - DONE")
 
     except:
@@ -58,8 +59,8 @@ def import_old_data(conn, cursor):
 
         for stream in streamData:
             cursor.execute('INSERT INTO streams ("stream_id", "service") VALUES (?,?)', (stream[1], stream[2]))
-            conn.commit()
 
+        conn.commit()
         print("> Importing stream data - DONE")
 
     except:
@@ -67,6 +68,52 @@ def import_old_data(conn, cursor):
 
     oldConn.close()
 
+
+def get_game_data(conn, cursor):
+    '''Downloads game data json from web and updates games table in database'''
+    print("> Downloading game data", end="\r")
+    headers = {"User-Agent":'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'}
+    response = requests.get(url=gamedataURL, headers=headers).json()
+    print("> Downloading game data - DONE")
+
+    print("> Importing game data", end="\r")
+    for name, field in response.items():
+        links = []
+
+        for link, url in field['links'].items():
+            links.append("{}:{}".format(link,url))
+
+        links = ",".join(links)
+
+        values = (
+            name,
+            field["full_name"],
+            field["argument"],
+            field["platform"],
+            field["developer"],
+            field["release_year"],
+            field["thumbnail"],
+            links,
+            ", ".join(field["characters"]),
+        )
+
+        cursor.execute('''
+            INSERT INTO games (
+                "name",
+                "full_name",
+                "argument",
+                "platform",
+                "developer",
+                "release_year",
+                "thumbnail",
+                "links",
+                "characters"
+            )
+
+            VALUES (?,?,?,?,?,?,?,?,?)''', (values))
+
+    conn.commit()
+    print("> Importing game data - DONE")
 
 def main():
     print("------------------------------------")
@@ -83,9 +130,8 @@ def main():
             cursor = db.cursor()
 
             create_db(db, cursor)
-            # move data from old db
             import_old_data(db, cursor)
-            # read game data
+            get_game_data(db, cursor)
 
             db.close()
             print("> Database successfully migrated to newest version! Exiting...")
@@ -100,7 +146,7 @@ def main():
             cursor = db.cursor()
 
             create_db(db, cursor)
-            # Read game data here
+            get_game_data(db, cursor)
             db.close()
             print("> New database has been created successfully! Exiting...")
 

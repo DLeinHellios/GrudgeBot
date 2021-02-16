@@ -10,7 +10,7 @@ from src import *
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 bot = commands.Bot(command_prefix="!", description="GrudgeBot - I know some fighting game stuff")
 
-bot.add_cog(Information(bot))
+#bot.add_cog(Information(bot))
 bot.add_cog(Taunt(bot))
 bot.add_cog(Randomizer(bot))
 bot.add_cog(Stream(bot))

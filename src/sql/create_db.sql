@@ -1,14 +1,17 @@
 -- Creates blank database tables
 
 CREATE TABLE "games" (
-	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+	"id"	INTEGER NOT NULL UNIQUE,
 	"name"	TEXT UNIQUE,
-	"arg"	TEXT UNIQUE,
+	"full_name"	TEXT,
+	"argument"	TEXT UNIQUE,
 	"platform"	TEXT,
 	"developer"	TEXT,
-	"release"	TEXT,
-	"movelist"	TEXT,
-	"characters"	TEXT
+	"release_year"	INTEGER,
+	"thumbnail"	TEXT,
+	"links"	TEXT,
+	"characters"	TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
 CREATE TABLE "streams" (
