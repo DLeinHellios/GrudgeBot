@@ -13,9 +13,10 @@ class Information(commands.Cog):
     @commands.command()
     async def games(self, ctx):
         '''Displays all supported games and their abbreviations'''
-        gameData = data.query_game_args()
-        if gameData != []:
-            msg = embedder.format_game_args()
+        gameList = data.query_game_list()
+        
+        if gameList != []:
+            msg = embedder.format_game_list(gameList)
             await ctx.send(embed=msg)
         else:
             await ctx.send("Sorry, I don't seem to know any games at the moment")
@@ -24,9 +25,10 @@ class Information(commands.Cog):
     @commands.command()
     async def info(self, ctx, game):
         '''Displays game info and links, requires a game abbreviation'''
-        gameData = data.query_games(game.lower())
+        gameData = data.query_game(game.lower())
+
         if gameData != None:
-            msg = embedder.format_games(data.query_games(game.lower()))
+            msg = embedder.format_game_info(gameData)
             await ctx.send(embed=msg)
         else:
             await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')

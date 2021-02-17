@@ -81,7 +81,7 @@ def get_game_data(conn, cursor):
         links = []
 
         for link, url in field['links'].items():
-            links.append("{}:{}".format(link,url))
+            links.append("{}|{}".format(link,url))
 
         links = ",".join(links)
 
