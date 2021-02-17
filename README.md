@@ -6,7 +6,7 @@ A bot for the GrudgeMatch Discord server, does fighting game stuff
 
 | Command          | Args                           | Permissions                    | Description                                     |
 | ---------------- | ------------------------------ | ------------------------------ | ----------------------------------------------- |
-| !games           | None                           | Anyone                         | Lists supports games for command arguments      |
+| !games           | None                           | Anyone                         | Lists known games and their abbreviations       |
 | !info            | Game (see !games)              | Anyone                         | Displays game info and links for specified game |
 | !taunt           | None                           | Anyone                         | Sends a random taunt                            |
 | !add-taunt       | Taunt text                     | Can Ban                        | Add a new taunt to the pool                     |

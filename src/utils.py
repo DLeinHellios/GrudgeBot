@@ -10,20 +10,20 @@ class Data:
             self.db = sqlite3.connect('data.db')
             self.c = self.db.cursor()
         except:
-            print("Cannot open database! Exiting...")
+            print("Cannot open database! Have you ran db_util.py? Exiting...")
             sys.exit()
 
 
-    def query_game_args(self):
-        '''Returns all game names and their corresponding commands'''
-        self.c.execute('SELECT name, arg FROM games ORDER BY name')
+    def query_game_list(self):
+        '''Returns all game names and their corresponding command arguments'''
+        self.c.execute('SELECT name, argument FROM games ORDER BY name')
 
         return self.c.fetchall()
 
 
-    def query_games(self, game):
+    def query_game(self, game):
         '''Returns all data about a specified game'''
-        self.c.execute('SELECT * FROM games WHERE arg=?', (game,))
+        self.c.execute('SELECT * FROM games WHERE argument=?', (game,))
         gameData = self.c.fetchall()
 
         if gameData != []:
@@ -103,7 +103,7 @@ class Data:
 
 class Embedder:
     '''Formats Discord embed objects'''
-    def format_game_args(self, commands):
+    def format_game_list(self, commands):
         '''Accepts a list of tuples containg game names and commands, returns formatted embed'''
         embed = discord.Embed(title="Supported Games", colour=discord.Colour(0xef4535))
         embed.set_thumbnail(url="https://dleinhellios.com/gm/logo_thumb.png")
@@ -114,38 +114,53 @@ class Embedder:
         return embed
 
 
-    def format_games(self, gameData):
+    def format_game_links(self, links):
+        '''Returns formatting link string from database field'''
+        linkList = links.split(",")
+
+        linkString = ''
+
+        for link in linkList:
+            splitLink = link.split("|")
+
+            linkString += " [{}]({}) -".format(*splitLink)
+
+        linkString = linkString[:-2] # Remove last "-"
+
+        return linkString
+
+
+
+    def format_game_info(self, gameData):
         '''Returns formatted embed for game data'''
-        if gameData != None:
+        # Main field
+        title = gameData[2] # full_name
+        description = ''
 
-            # Main field
-            title = gameData[1]
-            description = ''
 
-            for i in [gameData[3], gameData[4], gameData[5]]:
-                if i != None:
-                    description += i + " | "
+        # Description
+        for i in [gameData[4], gameData[5], str(gameData[6])]:
+            if i != None:
+                description += i + " | "
 
-            if description != '':
-                description = description[:-3]
-                embed = discord.Embed(title=title, colour=discord.Colour(0xf7b722), description=description)
+        if description != '': # Description needs to be non-blank string!
+            description = description[:-3]
+        else:
+            description = "No description given"
 
-            else:
-                embed = discord.Embed(title=title, colour=discord.Colour(0xf7b722))
+        embed = discord.Embed(title=title, colour=discord.Colour(0xf7b722), description=description)
+        embed.set_thumbnail(url=gameData[7])
 
-            # Links field
-            links = ''
-            if gameData[7] != None:
-                links += '[Character Data](' + gameData[7] + ') | '
-            if gameData[6] != None:
-                links += '[Move List](' + gameData[6] + ') | '
+        # Characters field
+        if gameData[9] != None:
+            embed.add_field(name="Characters", value=gameData[9], inline=False)
 
-            if links != '':
-                links = links[:-3]
-                embed.add_field(name="Links", value=links, inline=False)
+        # Links Field
+        if gameData[8] != None:
+            linkText = self.format_game_links(gameData[8])
+            embed.add_field(name="Links", value=linkText, inline=False)
 
-            # Return formatted embed object
-            return embed
+        return embed
 
 
     def format_streams(self, streamData):

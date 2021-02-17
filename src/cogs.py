@@ -13,16 +13,22 @@ class Information(commands.Cog):
     @commands.command()
     async def games(self, ctx):
         '''Displays all supported games and their abbreviations'''
-        msg = embedder.format_game_args(data.query_game_args())
-        await ctx.send(embed=msg)
+        gameList = data.query_game_list()
+        
+        if gameList != []:
+            msg = embedder.format_game_list(gameList)
+            await ctx.send(embed=msg)
+        else:
+            await ctx.send("Sorry, I don't seem to know any games at the moment")
 
 
     @commands.command()
     async def info(self, ctx, game):
         '''Displays game info and links, requires a game abbreviation'''
-        gameData = data.query_games(game.lower())
+        gameData = data.query_game(game.lower())
+
         if gameData != None:
-            msg = embedder.format_games(data.query_games(game.lower()))
+            msg = embedder.format_game_info(gameData)
             await ctx.send(embed=msg)
         else:
             await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
@@ -104,7 +110,6 @@ class Stream(commands.Cog):
 
                 for user in users: # Send notifications for each live stream
                     msg = embedder.format_stream_notification(user)
-                    #msg = 'Hey everyone! **{}** is streaming on Twitch! \nCheck them out here: {}\n'.format(user['display_name'], "https://twitch.tv/" + user['login'])
                     await channel.send(embed=msg)
 
 
