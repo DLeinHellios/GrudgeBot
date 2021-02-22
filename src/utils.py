@@ -30,6 +30,17 @@ class Data:
             return gameData[0]
 
 
+    def query_characters(self, game):
+        '''Returns character names as a list for the specified game argument'''
+        self.c.execute('SELECT characters FROM games WHERE argument=?', (game,))
+        characters = self.c.fetchall()
+        # Convert from list of tuples containing character list string
+        characters = characters[0][0].split(", ")
+
+        if characters != []:
+            return characters
+
+
     def add_stream(self, id, service):
         '''Adds a streamer to database'''
         twitchStreams = self.query_twitch_logins()

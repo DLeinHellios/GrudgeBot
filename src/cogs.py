@@ -90,6 +90,17 @@ class Randomizer(commands.Cog):
             await ctx.send("I need a maximum number for that")
 
 
+    @commands.command(name="random-select")
+    async def random_seles(self, ctx, game):
+        '''Random character select'''
+        characterData = data.query_characters(game.lower())
+
+        if characterData != None:
+            await ctx.send("{} plays **{}**".format(ctx.author.mention, random.choice(characterData)))
+        else:
+            await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
+
+
 
 class Stream(commands.Cog):
     '''Commands for managing stream notifications'''
