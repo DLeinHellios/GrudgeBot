@@ -14,7 +14,7 @@ class Information(commands.Cog):
     async def games(self, ctx):
         '''Displays all supported games and their abbreviations'''
         gameList = data.query_game_list()
-        
+
         if gameList != []:
             msg = embedder.format_game_list(gameList)
             await ctx.send(embed=msg)
@@ -90,13 +90,25 @@ class Randomizer(commands.Cog):
             await ctx.send("I need a maximum number for that")
 
 
+    @commands.command(name="random-select")
+    async def random_seles(self, ctx, game):
+        '''Random character select'''
+        characterData = data.query_characters(game.lower())
+
+        if characterData != None:
+            await ctx.send("{} plays **{}**".format(ctx.author.mention, random.choice(characterData)))
+        else:
+            await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
+
+
+
 class Stream(commands.Cog):
     '''Commands for managing stream notifications'''
     def __init__(self, bot):
         self.bot = bot
 
 
-    @tasks.loop(seconds=100)
+    @tasks.loop(seconds=300)
     async def notifications(self, channel):
         '''Gives notifications for live streams, only supports Twitch'''
         watchlist = data.query_twitch_logins() # List of Twitch login names
@@ -125,9 +137,9 @@ class Stream(commands.Cog):
     @commands.has_permissions(ban_members=True)
     async def remove_twitch_streamer(self, ctx):
         '''(Mod/Admin) Clears Twitch watchlist'''
-        msg = data.clear_streams("Twitch")
+        data.clear_streams("Twitch")
         twitch.live = []
-        await ctx.send(msg)
+        await ctx.send("Stream watchlist for Twitch has been cleared")
 
 
     @commands.command(name="streams")
@@ -136,7 +148,8 @@ class Stream(commands.Cog):
         logins = data.query_twitch_logins()
 
         if logins != []:
-            msg = embedder.format_streams(twitch.get_user_data(data.query_twitch_logins()))
+            twitchData = sorted(twitch.get_user_data(logins), key=lambda item: item['display_name'].lower())
+            msg = embedder.format_streams(twitchData)
             await ctx.send(embed=msg)
 
         else:

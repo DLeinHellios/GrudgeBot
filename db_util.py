@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #db_util.py - SQLite migration utility for GrudgeBot
 
 import os, sys, requests
@@ -71,49 +72,63 @@ def import_old_data(conn, cursor):
 
 def get_game_data(conn, cursor):
     '''Downloads game data json from web and updates games table in database'''
+    # Download from dleinhellios.com
     print("> Downloading game data", end="\r")
-    headers = {"User-Agent":'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'}
-    response = requests.get(url=gamedataURL, headers=headers).json()
-    print("> Downloading game data - DONE")
 
+    try:
+        headers = {"User-Agent":'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'}
+        response = requests.get(url=gamedataURL, headers=headers).json()
+        print("> Downloading game data - DONE")
+
+    except:
+        print("> Warning - Unable to download game data")
+        return
+
+    # Import JSON values into db
     print("> Importing game data", end="\r")
-    for name, field in response.items():
-        links = []
 
-        for link, url in field['links'].items():
-            links.append("{}|{}".format(link,url))
+    try:
+        for name, field in response.items():
+            links = []
 
-        links = ",".join(links)
+            for link, url in field['links'].items():
+                links.append("{}|{}".format(link,url))
 
-        values = (
-            name,
-            field["full_name"],
-            field["argument"],
-            field["platform"],
-            field["developer"],
-            field["release_year"],
-            field["thumbnail"],
-            links,
-            ", ".join(field["characters"]),
-        )
+            links = ",".join(links)
 
-        cursor.execute('''
-            INSERT INTO games (
-                "name",
-                "full_name",
-                "argument",
-                "platform",
-                "developer",
-                "release_year",
-                "thumbnail",
-                "links",
-                "characters"
+            values = (
+                name,
+                field["full_name"],
+                field["argument"],
+                field["platform"],
+                field["developer"],
+                field["release_year"],
+                field["thumbnail"],
+                links,
+                ", ".join(field["characters"]),
             )
 
-            VALUES (?,?,?,?,?,?,?,?,?)''', (values))
+            cursor.execute('''
+                INSERT INTO games (
+                    "name",
+                    "full_name",
+                    "argument",
+                    "platform",
+                    "developer",
+                    "release_year",
+                    "thumbnail",
+                    "links",
+                    "characters"
+                )
 
-    conn.commit()
-    print("> Importing game data - DONE")
+                VALUES (?,?,?,?,?,?,?,?,?)''', (values))
+
+        conn.commit()
+        print("> Importing game data - DONE")
+
+    except:
+        print("> Warning - Unable to import game data")
+
 
 def main():
     print("------------------------------------")

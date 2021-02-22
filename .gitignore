@@ -1,6 +1,6 @@
 # Database files
 data.db*
-/jsons
+/resources
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

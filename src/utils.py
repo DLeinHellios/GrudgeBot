@@ -22,12 +22,23 @@ class Data:
 
 
     def query_game(self, game):
-        '''Returns all data about a specified game'''
+        '''Returns all data about a specified game argument'''
         self.c.execute('SELECT * FROM games WHERE argument=?', (game,))
         gameData = self.c.fetchall()
 
         if gameData != []:
             return gameData[0]
+
+
+    def query_characters(self, game):
+        '''Returns character names as a list for the specified game argument'''
+        self.c.execute('SELECT characters FROM games WHERE argument=?', (game,))
+        characters = self.c.fetchall()
+        # Convert from list of tuples containing character list string
+        characters = characters[0][0].split(", ")
+
+        if characters != []:
+            return characters
 
 
     def add_stream(self, id, service):
@@ -49,10 +60,8 @@ class Data:
 
     def clear_streams(self, service):
         '''Removes all streamers of a particular service from watchlist'''
-        self.c.execute('DELETE FROM streams WHERE (service=?)', ("Twitch",))
+        self.c.execute('DELETE FROM streams WHERE (service=?)', (service,))
         self.db.commit()
-
-        return "Stream watchlist for {} has been cleared".format(service)
 
 
     def query_twitch_logins(self):
@@ -130,13 +139,11 @@ class Embedder:
         return linkString
 
 
-
     def format_game_info(self, gameData):
         '''Returns formatted embed for game data'''
         # Main field
         title = gameData[2] # full_name
         description = ''
-
 
         # Description
         for i in [gameData[4], gameData[5], str(gameData[6])]:
