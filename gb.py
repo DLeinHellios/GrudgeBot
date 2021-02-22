@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# GrudgeBot - Discord bot for GrudgeMatch server
 # Copyright 2020 DLeinHellios
 # Logo by ZN
 # Provided under the Apache License 2.0
@@ -47,5 +48,4 @@ async def on_command_error(ctx, error):
 
 
 if __name__ == "__main__":
-    # Run bot
     bot.run(os.environ['DISCORD_TOKEN'])
