@@ -1,15 +1,13 @@
 # GrudgeBot
 
-<p align="center">
-    <img src="img/icon.png?raw=true" alt="submit" style="width:256px;"/>
-</p>
+![GrudgeBot](img/logo.png?raw=true)
 
 A bot for the GrudgeMatch Discord server, does fighting game stuff
 
-## Usage
+## Functions
 
 | Command          | Module                         | Arguments                      | Permissions                    | Description                                     |
-| ---------------- | ------------------------------ | ------------------------------ | -------------------------------------------------------------------------------- |
+| ---------------- | ------------------------------ | ------------------------------ | -------------------------------|------------------------------------------------ |
 | !games           | Information                    | None                           | Anyone                         | Lists known games and their abbreviations       |
 | !info            | Information                    | Game (see !games)              | Anyone                         | Displays game info and links for specified game |
 | !random-select   | Randomizer                     | Game (see !games)              | Anyone                         | Acts a random character select for games        |
