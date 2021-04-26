@@ -26,3 +26,10 @@ CREATE TABLE "taunts" (
 	"author"	TEXT,
 	"body"		TEXT
 );
+
+CREATE TABLE "champs" (
+	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+	"game_id" INTEGER NOT NULL,
+	"player" TEXT NOT NULL,
+	"crown_date" DATE
+);

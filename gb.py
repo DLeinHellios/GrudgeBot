@@ -15,6 +15,7 @@ bot.add_cog(Information(bot))
 bot.add_cog(Taunt(bot))
 bot.add_cog(Randomizer(bot))
 bot.add_cog(Stream(bot))
+bot.add_cog(Champion(bot))
 
 
 @bot.event

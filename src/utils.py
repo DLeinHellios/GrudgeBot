@@ -1,6 +1,6 @@
 # Utility classes for GrudgeBot
 
-import discord, os, sys, sqlite3, random, requests
+import discord, os, sys, sqlite3, datetime, random, requests
 
 
 class Data:
@@ -109,6 +109,49 @@ class Data:
         self.db.commit()
 
 
+    def query_champ(self, game):
+        '''Returns champ info for specified game, returns None if no game or champ exists'''
+        # Get prerequisite info
+        info = self.query_game(game)
+
+        # Check for champ
+        if info == None:
+            champ = None
+
+        else:
+            # Fetch champ entry
+            self.c.execute('SELECT * FROM champs WHERE game_id=? AND current=1', (info[0],))
+            champ = self.c.fetchall()
+
+            # Format return
+            if champ != []:
+                champ = (info[1], champ[0][2], champ[0][3])
+
+            else:
+                champ = None
+
+        return champ
+
+
+    def set_champ(self, game, champ):
+        '''Sets current champion of specified game, accepts game argument abbreviation'''
+        # Get prerequisite info
+        info = self.query_game(game)
+        today = datetime.date.today()
+
+        if info == None: # Game not found
+            return None
+
+        # Mark others as non-current
+        self.c.execute('UPDATE champs SET current=0 WHERE game_id=?', (info[0],))
+
+        # Create new champ entry
+        self.c.execute('INSERT INTO champs ("game_id", "player", "crown_date", "current") VALUES (?,?,?,1)', (info[0], champ, today))
+        self.db.commit()
+
+        return info[1]
+
+
 
 class Embedder:
     '''Formats Discord embed objects'''
@@ -197,6 +240,7 @@ class Embedder:
         embed.set_thumbnail(url=userData["profile_image_url"])
 
         return embed
+
 
 
 class Twitch:
