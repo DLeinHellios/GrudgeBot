@@ -139,12 +139,17 @@ class Data:
         info = self.query_game(game)
         today = datetime.date.today()
 
+        if info == None: # Game not found
+            return None
+
         # Mark others as non-current
         self.c.execute('UPDATE champs SET current=0 WHERE game_id=?', (info[0],))
 
         # Create new champ entry
         self.c.execute('INSERT INTO champs ("game_id", "player", "crown_date", "current") VALUES (?,?,?,1)', (info[0], champ, today))
         self.db.commit()
+
+        return info[1]
 
 
 

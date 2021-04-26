@@ -91,7 +91,7 @@ class Randomizer(commands.Cog):
 
 
     @commands.command(name="random-select")
-    async def random_seles(self, ctx, game):
+    async def random_select(self, ctx, game):
         '''Random character select'''
         characterData = data.query_characters(game.lower())
 
@@ -154,3 +154,56 @@ class Stream(commands.Cog):
 
         else:
             await ctx.send("No streams are on my radar. That's kinda boring.")
+
+
+
+class Champion(commands.Cog):
+    '''Commands for crowning a champ in supported games'''
+    def __init__(self, bot):
+        self.bot = bot
+
+
+    @commands.command(name="champ")
+    async def get_champ(self, ctx, game):
+        '''Check the reigning champ in a supported game'''
+        champ = data.query_champ(game)
+
+        try:
+            member = await commands.converter.MemberConverter().convert(ctx, champ[1])
+
+        except:
+            # Can't id a member, set None so it uses plain text
+            member = None
+
+        if champ != None:
+            if member != None:
+                await ctx.send("The current champion of **{}** is {}. Their glorious reign began **{}**.".format(champ[0], member.mention, champ[2]))
+
+            else:
+                await ctx.send("The current champion of **{}** is **{}**. Their glorious reign began **{}**.".format(*champ))
+
+        else:
+            await ctx.send("We haven't crowned a champion in this game yet. Flag down a mod to get that fixed.")
+
+
+    @commands.command(name="set-champ", pass_context=True)
+    @commands.has_permissions(ban_members=True)
+    async def set_champ(self, ctx, game, champ):
+        '''(Mod/Admin) Sets current game champion'''
+        try:
+            member = await commands.converter.MemberConverter().convert(ctx, champ)
+
+        except:
+            # Can't id a member, set as string
+            member = champ
+
+        game = data.set_champ(game, str(member))
+
+        if game != None:
+            if not isinstance(member, str):
+                await ctx.send("All hail the mighty {}, champion of **{}**".format(member.mention, game))
+            else:
+                await ctx.send("All hail the mighty **{}**, champion of **{}**".format(member, game))
+
+        else:
+            await ctx.send("Awful hard to crown a champion of a game I don't know...")
