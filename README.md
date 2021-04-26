@@ -3,7 +3,7 @@
 A bot for the GrudgeMatch Discord server. Mostly does fighting game stuff.
 
 <p align="center">
-    ![GrudgeBot](img/logo.png?raw=true)
+    <img src=img/logo.png?raw=true >
 </p>
 
 ## Functions
