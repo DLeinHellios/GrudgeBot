@@ -1,8 +1,10 @@
 # GrudgeBot
 
-![GrudgeBot](img/logo.png?raw=true)
+A bot for the GrudgeMatch Discord server. Mostly does fighting game stuff.
 
-A bot for the GrudgeMatch Discord server, does fighting game stuff
+<p align="center">
+    ![GrudgeBot](img/logo.png?raw=true)
+</p>
 
 ## Functions
 
@@ -16,6 +18,8 @@ A bot for the GrudgeMatch Discord server, does fighting game stuff
 | !taunt           | Taunt                          | None                           | Anyone                         | Sends a random taunt                            |
 | !add-taunt       | Taunt                          | Taunt text                     | Can Ban                        | Add a new taunt to the pool                     |
 | !no-taunts       | Taunt                          | None                           | Can Ban                        | Removes all taunts                              |
+| !champ           | Champion                       | Game (see !games)              | Anyone                         | Displays the current champ of specified game    |
+| !set-champ       | Champion                       | Game, Member @mention          | Can Ban                        | Sets game champ, accepts player name or mention |
 | !streams         | Stream                         | None                           | Anyone                         | Displays streamer watchlist                     |
 | !add-twitch      | Stream                         | Twitch login name              | Can Ban                        | Adds a Twitch streamer to notification list     |
 | !clear-twitch    | Stream                         | None                           | Can Ban                        | Clears Twitch streamer watchlist                |
