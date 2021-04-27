@@ -29,7 +29,8 @@ CREATE TABLE "taunts" (
 
 CREATE TABLE "champs" (
 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-	"game_id" INTEGER NOT NULL,
+	"game" TEXT NOT NULL,
 	"player" TEXT NOT NULL,
-	"crown_date" DATE
+	"crown_date" DATE,
+	"current" BOOLEAN
 );

@@ -120,7 +120,7 @@ class Data:
 
         else:
             # Fetch champ entry
-            self.c.execute('SELECT * FROM champs WHERE game_id=? AND current=1', (info[0],))
+            self.c.execute('SELECT * FROM champs WHERE game=? AND current=1', (info[3],))
             champ = self.c.fetchall()
 
             # Format return
@@ -143,10 +143,10 @@ class Data:
             return None
 
         # Mark others as non-current
-        self.c.execute('UPDATE champs SET current=0 WHERE game_id=?', (info[0],))
+        self.c.execute('UPDATE champs SET current=0 WHERE game=?', (info[3],))
 
         # Create new champ entry
-        self.c.execute('INSERT INTO champs ("game_id", "player", "crown_date", "current") VALUES (?,?,?,1)', (info[0], champ, today))
+        self.c.execute('INSERT INTO champs ("game", "player", "crown_date", "current") VALUES (?,?,?,1)', (info[3], champ, today))
         self.db.commit()
 
         return info[1]

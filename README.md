@@ -1,12 +1,8 @@
 # GrudgeBot
 
-A bot for the GrudgeMatch Discord server. Mostly does fighting game stuff.
+A bot for the GrudgeMatch Discord server. Does some fun fighting game stuff.
 
-<p align="center">
-    <img src=img/logo.png?raw=true >
-</p>
-
-## Functions
+## Commands
 
 | Command          | Module                         | Arguments                      | Permissions                    | Description                                     |
 | ---------------- | ------------------------------ | ------------------------------ | -------------------------------|------------------------------------------------ |
@@ -31,3 +27,7 @@ A bot for the GrudgeMatch Discord server. Mostly does fighting game stuff.
 [Twitch Client ID and Secret](https://dev.twitch.tv/)
 
 See .env.example
+
+<p align="center">
+    <img src=img/logo.png?raw=true >
+</p>
