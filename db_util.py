@@ -45,13 +45,13 @@ def import_old_data(conn, cursor):
         tauntData = oldCursor.fetchall()
 
         for taunt in tauntData:
-            cursor.execute('INSERT INTO taunts ("author", "body") VALUES (?, ?)', (taunt[1], taunt[2]))
+            cursor.execute('INSERT INTO taunts ("author", "body") VALUES (?, ?)', tuple(taunt[1:]))
 
         conn.commit()
         print("> Importing taunt data - DONE")
 
     except:
-        print("> Warning - Unable to import taunt data")
+        print("> WARNING - Unable to import taunt data")
 
     try:
         print("> Importing stream data", end="\r")
@@ -59,13 +59,27 @@ def import_old_data(conn, cursor):
         streamData = oldCursor.fetchall()
 
         for stream in streamData:
-            cursor.execute('INSERT INTO streams ("stream_id", "service") VALUES (?,?)', (stream[1], stream[2]))
+            cursor.execute('INSERT INTO streams ("stream_id", "service") VALUES (?,?)', tuple(stream[1:]))
 
         conn.commit()
         print("> Importing stream data - DONE")
 
     except:
-        print("> Warning - Unable to import stream data")
+        print("> WARNING - Unable to import stream data")
+
+    try:
+        print("> Importing champ data", end="\r")
+        oldCursor.execute('SELECT * FROM champs')
+        champData = oldCursor.fetchall()
+
+        for champ in champData:
+            cursor.execute('INSERT INTO champs ("game", "player", "crown_date", "current") VALUES (?,?,?,?)', tuple(champ[1:]))
+
+        conn.commit()
+        print("> Importing champ data - DONE")
+
+    except:
+        print("> WARNING - Unable to import champ data")
 
     oldConn.close()
 
