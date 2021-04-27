@@ -168,19 +168,8 @@ class Champion(commands.Cog):
         '''Check the reigning champ in a supported game'''
         champ = data.query_champ(game)
 
-        try:
-            member = await commands.converter.MemberConverter().convert(ctx, champ[1])
-
-        except:
-            # Can't id a member, set None so it uses plain text
-            member = None
-
         if champ != None:
-            if member != None:
-                await ctx.send("The current champion of **{}** is {}. Their glorious reign began **{}**.".format(champ[0], member.mention, champ[2]))
-
-            else:
-                await ctx.send("The current champion of **{}** is **{}**. Their glorious reign began **{}**.".format(*champ))
+            await ctx.send("The current champion of **{}** is **{}**. Their glorious reign began **{}**.".format(*champ))
 
         else:
             await ctx.send("We haven't crowned a champion in this game yet. Flag down a mod to get that fixed.")
@@ -188,22 +177,12 @@ class Champion(commands.Cog):
 
     @commands.command(name="set-champ", pass_context=True)
     @commands.has_permissions(ban_members=True)
-    async def set_champ(self, ctx, game, champ):
+    async def set_champ(self, ctx, game, *, champ):
         '''(Mod/Admin) Sets current game champion'''
-        try:
-            member = await commands.converter.MemberConverter().convert(ctx, champ)
-
-        except:
-            # Can't id a member, set as string
-            member = champ
-
-        game = data.set_champ(game, str(member))
+        game = data.set_champ(game, champ)
 
         if game != None:
-            if not isinstance(member, str):
-                await ctx.send("All hail the mighty {}, champion of **{}**".format(member.mention, game))
-            else:
-                await ctx.send("All hail the mighty **{}**, champion of **{}**".format(member, game))
+            await ctx.send("All hail the mighty **{}**, champion of **{}**".format(champ, game))
 
         else:
             await ctx.send("Awful hard to crown a champion of a game I don't know...")
