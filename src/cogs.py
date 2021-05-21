@@ -34,6 +34,12 @@ class Information(commands.Cog):
             await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
 
 
+    @commands.command()
+    async def glossary(self, ctx, *, term):
+        '''Searches Infil's fighting game glossary'''
+        await ctx.send('See here:\nhttps://glossary.infil.net/?t={}'.format(term.replace(" ", "%20")[:100]))
+
+
 
 class Taunt(commands.Cog):
     '''Commands to talk shit'''
