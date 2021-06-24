@@ -155,7 +155,7 @@ class Data:
 
 class Embedder:
     '''Formats Discord embed objects'''
-    def format_game_list(self, commands):
+    def game_list(self, commands):
         '''Accepts a list of tuples containg game names and commands, returns formatted embed'''
         embed = discord.Embed(title="Supported Games", colour=discord.Colour(0xef4535))
         embed.set_thumbnail(url="https://dleinhellios.com/gm/logo_thumb.png")
@@ -166,7 +166,7 @@ class Embedder:
         return embed
 
 
-    def format_game_links(self, links):
+    def game_links(self, links):
         '''Returns formatting link string from database field'''
         linkList = links.split(",")
 
@@ -182,7 +182,7 @@ class Embedder:
         return linkString
 
 
-    def format_game_info(self, gameData):
+    def game_info(self, gameData):
         '''Returns formatted embed for game data'''
         # Main field
         title = gameData[2] # full_name
@@ -207,13 +207,13 @@ class Embedder:
 
         # Links Field
         if gameData[8] != None:
-            linkText = self.format_game_links(gameData[8])
+            linkText = self.game_links(gameData[8])
             embed.add_field(name="Links", value=linkText, inline=False)
 
         return embed
 
 
-    def format_streams(self, streamData):
+    def streamers(self, streamData):
         '''Returns formatted embed for cuttently followed streams, only Twitch for now'''
         embed = discord.Embed(title="Followed Streams", colour=discord.Colour(14378506))
         embed.set_thumbnail(url="https://dleinhellios.com/gm/logo_thumb.png")
@@ -231,7 +231,7 @@ class Embedder:
         return embed
 
 
-    def format_stream_notification(self, userData):
+    def stream_notification(self, userData):
         '''Creates embed for Twitch notification'''
         title = "{} is live!".format(userData["display_name"])
         url = "https://twitch.tv/" + userData["login"]
