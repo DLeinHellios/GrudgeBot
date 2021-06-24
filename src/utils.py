@@ -242,6 +242,18 @@ class Embedder:
         return embed
 
 
+    def about(self):
+        '''Creates embed about Dial'''
+        description = "GrudgeBot is developed by [Dial](https://dleinhellios.com) to be a useful and fun addition to this server. We like fighting games around here, so most functionality pertains to that. GrudgeBot is free, open-source software. Wanna see the code? [Check out GrudgeBot on GitHub!](https://github.com/DLeinHellios/GrudgeBot)"
+        embed=discord.Embed(title="About the Developer", description=description, color=0x22c1dd)
+        embed.set_thumbnail(url="https://dleinhellios.com/img/dial.png")
+
+        links = "[DLeinHellios.com](https://dleinhellios.com) | [Dial's GitHub](https://github.com/DLeinHellios) | [Dial's Twitter](https://twitter.com/DLeinHellios)"
+        embed.add_field(name="More Links", value=links)
+
+        return embed
+
+
 
 class Twitch:
     '''Handles calls to Twitch API'''

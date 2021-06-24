@@ -16,8 +16,7 @@ class Information(commands.Cog):
         gameList = data.query_game_list()
 
         if gameList != []:
-            msg = embedder.game_list(gameList)
-            await ctx.send(embed=msg)
+            await ctx.send(embed=embedder.game_list(gameList))
         else:
             await ctx.send("Sorry, I don't seem to know any games at the moment")
 
@@ -28,8 +27,7 @@ class Information(commands.Cog):
         gameData = data.query_game(game.lower())
 
         if gameData != None:
-            msg = embedder.game_info(gameData)
-            await ctx.send(embed=msg)
+            await ctx.send(embed=embedder.game_info(gameData))
         else:
             await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
 
@@ -38,6 +36,12 @@ class Information(commands.Cog):
     async def glossary(self, ctx, *, term):
         '''Searches Infil's fighting game glossary'''
         await ctx.send('https://glossary.infil.net/?t={}'.format(term.replace(" ", "%20")[:100]))
+
+
+    @commands.command()
+    async def about(self, ctx):
+        '''Shows some developer info'''
+        await ctx.send(embed=embedder.about())
 
 
 
@@ -155,8 +159,7 @@ class Stream(commands.Cog):
 
         if logins != []:
             twitchData = sorted(twitch.get_user_data(logins), key=lambda item: item['display_name'].lower())
-            msg = embedder.streamers(twitchData)
-            await ctx.send(embed=msg)
+            await ctx.send(embed=embedder.streamers(twitchData))
 
         else:
             await ctx.send("No streams are on my radar. That's kinda boring.")
