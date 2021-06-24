@@ -195,3 +195,21 @@ class Champion(commands.Cog):
 
         else:
             await ctx.send("Awful hard to crown a champion of a game I don't know...")
+
+
+
+class System(commands.Cog):
+    '''Commands to manage GrudgeBot'''
+    def __init__(self, bot):
+        self.bot = bot
+
+
+    @commands.command(name="update-games")
+    @commands.has_permissions(ban_members=True)
+    async def update_games(self, ctx):
+        '''(Mod/Admin) Checks for updates to the game list'''
+        if data.update_games():
+            await ctx.send("I've updated my game data!")
+
+        else:
+            await ctx.send("Oh no! I couldn't update my game data!")

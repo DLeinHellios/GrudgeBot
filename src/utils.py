@@ -9,6 +9,9 @@ class Data:
         try:
             self.db = sqlite3.connect('data.db')
             self.c = self.db.cursor()
+
+            self.gamedataURL = "https://dleinhellios.com/gm/game_data.json"
+
         except:
             print("Cannot open database! Have you ran db_util.py? Exiting...")
             sys.exit()
@@ -150,6 +153,61 @@ class Data:
         self.db.commit()
 
         return info[1]
+
+
+    def update_games(self):
+        '''Downloads game data json from web and updates games table in database'''
+        try:
+            # Download data json
+            headers = {"User-Agent":'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'}
+            response = requests.get(url=self.gamedataURL, headers=headers).json()
+
+            # Clean up old game data first
+            self.c.execute("DELETE FROM games")
+
+            # Import data into database
+            for name, field in response.items():
+                links = []
+
+                for link, url in field['links'].items():
+                    links.append("{}|{}".format(link,url))
+
+                links = ",".join(links)
+
+                values = (
+                    name,
+                    field["full_name"],
+                    field["argument"],
+                    field["platform"],
+                    field["developer"],
+                    field["release_year"],
+                    field["thumbnail"],
+                    links,
+                    ", ".join(field["characters"]),
+                )
+
+                self.c.execute('''
+                    INSERT INTO games (
+                        "name",
+                        "full_name",
+                        "argument",
+                        "platform",
+                        "developer",
+                        "release_year",
+                        "thumbnail",
+                        "links",
+                        "characters"
+                    )
+
+                    VALUES (?,?,?,?,?,?,?,?,?)''', (values))
+
+            self.db.commit()
+            # Return true for success
+            return True
+
+        except:
+            # Failed to update game data
+            return False
 
 
 
