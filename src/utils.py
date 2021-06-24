@@ -9,6 +9,9 @@ class Data:
         try:
             self.db = sqlite3.connect('data.db')
             self.c = self.db.cursor()
+
+            self.gamedataURL = "https://dleinhellios.com/gm/game_data.json"
+
         except:
             print("Cannot open database! Have you ran db_util.py? Exiting...")
             sys.exit()
@@ -152,10 +155,65 @@ class Data:
         return info[1]
 
 
+    def update_games(self):
+        '''Downloads game data json from web and updates games table in database'''
+        try:
+            # Download data json
+            headers = {"User-Agent":'Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11'}
+            response = requests.get(url=self.gamedataURL, headers=headers).json()
+
+            # Clean up old game data first
+            self.c.execute("DELETE FROM games")
+
+            # Import data into database
+            for name, field in response.items():
+                links = []
+
+                for link, url in field['links'].items():
+                    links.append("{}|{}".format(link,url))
+
+                links = ",".join(links)
+
+                values = (
+                    name,
+                    field["full_name"],
+                    field["argument"],
+                    field["platform"],
+                    field["developer"],
+                    field["release_year"],
+                    field["thumbnail"],
+                    links,
+                    ", ".join(field["characters"]),
+                )
+
+                self.c.execute('''
+                    INSERT INTO games (
+                        "name",
+                        "full_name",
+                        "argument",
+                        "platform",
+                        "developer",
+                        "release_year",
+                        "thumbnail",
+                        "links",
+                        "characters"
+                    )
+
+                    VALUES (?,?,?,?,?,?,?,?,?)''', (values))
+
+            self.db.commit()
+            # Return true for success
+            return True
+
+        except:
+            # Failed to update game data
+            return False
+
+
 
 class Embedder:
     '''Formats Discord embed objects'''
-    def format_game_list(self, commands):
+    def game_list(self, commands):
         '''Accepts a list of tuples containg game names and commands, returns formatted embed'''
         embed = discord.Embed(title="Supported Games", colour=discord.Colour(0xef4535))
         embed.set_thumbnail(url="https://dleinhellios.com/gm/logo_thumb.png")
@@ -166,7 +224,7 @@ class Embedder:
         return embed
 
 
-    def format_game_links(self, links):
+    def game_links(self, links):
         '''Returns formatting link string from database field'''
         linkList = links.split(",")
 
@@ -182,7 +240,7 @@ class Embedder:
         return linkString
 
 
-    def format_game_info(self, gameData):
+    def game_info(self, gameData):
         '''Returns formatted embed for game data'''
         # Main field
         title = gameData[2] # full_name
@@ -207,13 +265,13 @@ class Embedder:
 
         # Links Field
         if gameData[8] != None:
-            linkText = self.format_game_links(gameData[8])
+            linkText = self.game_links(gameData[8])
             embed.add_field(name="Links", value=linkText, inline=False)
 
         return embed
 
 
-    def format_streams(self, streamData):
+    def streamers(self, streamData):
         '''Returns formatted embed for cuttently followed streams, only Twitch for now'''
         embed = discord.Embed(title="Followed Streams", colour=discord.Colour(14378506))
         embed.set_thumbnail(url="https://dleinhellios.com/gm/logo_thumb.png")
@@ -231,13 +289,25 @@ class Embedder:
         return embed
 
 
-    def format_stream_notification(self, userData):
+    def stream_notification(self, userData):
         '''Creates embed for Twitch notification'''
         title = "{} is live!".format(userData["display_name"])
         url = "https://twitch.tv/" + userData["login"]
         description = userData["description"] + "\nWatch now at " + url
         embed = discord.Embed(title=title, description=description, url=url, colour=discord.Colour(14378506))
         embed.set_thumbnail(url=userData["profile_image_url"])
+
+        return embed
+
+
+    def about(self):
+        '''Creates embed about Dial'''
+        description = "GrudgeBot is developed by [Dial](https://dleinhellios.com) to be a useful and fun addition to this server. We like fighting games around here, so most functionality pertains to that. GrudgeBot is free, open-source software. Wanna see the code? [Check out GrudgeBot on GitHub!](https://github.com/DLeinHellios/GrudgeBot)"
+        embed=discord.Embed(title="About the Developer", description=description, color=0x22c1dd)
+        embed.set_thumbnail(url="https://dleinhellios.com/img/dial.png")
+
+        links = "[DLeinHellios.com](https://dleinhellios.com) | [Dial's GitHub](https://github.com/DLeinHellios) | [Dial's Twitter](https://twitter.com/DLeinHellios)"
+        embed.add_field(name="More Links", value=links)
 
         return embed
 

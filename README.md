@@ -9,6 +9,7 @@ A bot for the GrudgeMatch Discord server. Does some fun fighting game stuff.
 | !games           | Information                    | None                           | Anyone                         | Lists known games and their abbreviations       |
 | !info            | Information                    | Game (see !games)              | Anyone                         | Displays game info and links for specified game |
 | !glossary        | Information                    | Search Term                    | Anyone                         | Searches Infil's fighting game glossary         |
+| !about           | Information                    | None                           | Anyone                         | Displays developer information                  |
 | !random-select   | Randomizer                     | Game (see !games)              | Anyone                         | Acts a random character select for games        |
 | !roll            | Randomizer                     | Max Roll                       | Anyone                         | Rolls a random number 1-max (inclusive)         |
 | !flip            | Randomizer                     | None                           | Anyone                         | Flips a 2-sided coin heads/tails                |
@@ -20,6 +21,7 @@ A bot for the GrudgeMatch Discord server. Does some fun fighting game stuff.
 | !streams         | Stream                         | None                           | Anyone                         | Displays streamer watchlist                     |
 | !add-twitch      | Stream                         | Twitch login name              | Can Ban                        | Adds a Twitch streamer to notification list     |
 | !clear-twitch    | Stream                         | None                           | Can Ban                        | Clears Twitch streamer watchlist                |
+| !update-games    | System                         | None                           | Can Ban                        | Updates known game data from the web            |
 
 
 ## Requirements

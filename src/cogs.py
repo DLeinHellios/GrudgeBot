@@ -16,8 +16,7 @@ class Information(commands.Cog):
         gameList = data.query_game_list()
 
         if gameList != []:
-            msg = embedder.format_game_list(gameList)
-            await ctx.send(embed=msg)
+            await ctx.send(embed=embedder.game_list(gameList))
         else:
             await ctx.send("Sorry, I don't seem to know any games at the moment")
 
@@ -28,8 +27,7 @@ class Information(commands.Cog):
         gameData = data.query_game(game.lower())
 
         if gameData != None:
-            msg = embedder.format_game_info(gameData)
-            await ctx.send(embed=msg)
+            await ctx.send(embed=embedder.game_info(gameData))
         else:
             await ctx.send('Sorry, I don\'t know that game. Please check available games with the "!games" command.')
 
@@ -37,7 +35,13 @@ class Information(commands.Cog):
     @commands.command()
     async def glossary(self, ctx, *, term):
         '''Searches Infil's fighting game glossary'''
-        await ctx.send('See here:\nhttps://glossary.infil.net/?t={}'.format(term.replace(" ", "%20")[:100]))
+        await ctx.send('https://glossary.infil.net/?t={}'.format(term.replace(" ", "%20")[:100]))
+
+
+    @commands.command()
+    async def about(self, ctx):
+        '''Shows some developer info'''
+        await ctx.send(embed=embedder.about())
 
 
 
@@ -127,7 +131,7 @@ class Stream(commands.Cog):
                 users = twitch.get_user_data(users)
 
                 for user in users: # Send notifications for each live stream
-                    msg = embedder.format_stream_notification(user)
+                    msg = embedder.stream_notification(user)
                     await channel.send(embed=msg)
 
 
@@ -155,8 +159,7 @@ class Stream(commands.Cog):
 
         if logins != []:
             twitchData = sorted(twitch.get_user_data(logins), key=lambda item: item['display_name'].lower())
-            msg = embedder.format_streams(twitchData)
-            await ctx.send(embed=msg)
+            await ctx.send(embed=embedder.streamers(twitchData))
 
         else:
             await ctx.send("No streams are on my radar. That's kinda boring.")
@@ -192,3 +195,21 @@ class Champion(commands.Cog):
 
         else:
             await ctx.send("Awful hard to crown a champion of a game I don't know...")
+
+
+
+class System(commands.Cog):
+    '''Commands to manage GrudgeBot'''
+    def __init__(self, bot):
+        self.bot = bot
+
+
+    @commands.command(name="update-games")
+    @commands.has_permissions(ban_members=True)
+    async def update_games(self, ctx):
+        '''(Mod/Admin) Checks for updates to the game list'''
+        if data.update_games():
+            await ctx.send("I've updated my game data!")
+
+        else:
+            await ctx.send("Oh no! I couldn't update my game data!")
