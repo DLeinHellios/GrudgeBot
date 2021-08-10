@@ -46,17 +46,32 @@ class Data:
 
     def add_stream(self, id, service):
         '''Adds a streamer to database'''
-        twitchStreams = self.query_twitch_logins()
-
         if service == "Twitch":
-            # Twitch channels
-            if id not in twitchStreams:
+            twitchStreams = self.query_twitch_logins()
+
+            if id in twitchStreams:
+                msg = "Twitch steamer **{}** is already followed".format(id)
+
+            else:
                 self.c.execute('INSERT INTO streams ("stream_id", "service") VALUES (?,?)', (id, service))
                 self.db.commit()
                 msg = "Twitch streamer **{}** has been added".format(id)
 
-            elif id in twitchStreams:
-                msg = "Twitch steamer **{}** is already followed".format(id)
+            return msg
+
+
+    def remove_stream(self, id, service):
+        '''Removes a stream from database'''
+        if service == "Twitch":
+            twitchStreams = self.query_twitch_logins()
+
+            if id in twitchStreams:
+                self.c.execute('DELETE FROM streams WHERE stream_id=?', (id,))
+                self.db.commit()
+                msg = "Twitch streamer **{}** has been removed".format(id)
+
+            else:
+                msg = "Twitch streamer **{}** not found. Names are case sensitive!".format(id)
 
             return msg
 

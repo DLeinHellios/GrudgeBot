@@ -143,9 +143,17 @@ class Stream(commands.Cog):
         await ctx.send(msg)
 
 
+    @commands.command(name="rm-twitch", pass_context=True)
+    @commands.has_permissions(ban_members=True)
+    async def remove_twitch_streamers(self, ctx, id):
+        '''(Mod/Admin) Remove a Twitch streamer from watchlist'''
+        msg = data.remove_stream(id, "Twitch")
+        await ctx.send(msg)
+
+
     @commands.command(name="clear-twitch", pass_context=True)
     @commands.has_permissions(ban_members=True)
-    async def remove_twitch_streamer(self, ctx):
+    async def clear_twitch_streamers(self, ctx):
         '''(Mod/Admin) Clears Twitch watchlist'''
         data.clear_streams("Twitch")
         twitch.live = []
@@ -163,6 +171,20 @@ class Stream(commands.Cog):
 
         else:
             await ctx.send("No streams are on my radar. That's kinda boring.")
+
+
+    @commands.command(name="streams-raw")
+    @commands.has_permissions(ban_members=True)
+    async def get_raw_streams(self, ctx):
+        '''(Mod/Admin) Displays unfiltered stream watchlist'''
+        logins = sorted(data.query_twitch_logins())
+
+        if len(logins) > 0:
+            message = "--- Twitch Watchlist ---\n" + "\n".join(logins)
+            await ctx.send(message)
+
+        else:
+            await ctx.send("Watchlist is empty")
 
 
 

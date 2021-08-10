@@ -19,7 +19,9 @@ A bot for the GrudgeMatch Discord server. Does some fun fighting game stuff.
 | !champ           | Champion                       | Game (see !games)              | Anyone                         | Displays the current champ of specified game    |
 | !set-champ       | Champion                       | Game, Member @mention          | Can Ban                        | Sets game champ, accepts player name or mention |
 | !streams         | Stream                         | None                           | Anyone                         | Displays streamer watchlist                     |
-| !add-twitch      | Stream                         | Twitch login name              | Can Ban                        | Adds a Twitch streamer to notification list     |
+| !streams-raw     | Stream                         | None                           | Can Ban                        | Displays unfiltered streamer watchlist          |
+| !add-twitch      | Stream                         | Twitch login name              | Can Ban                        | Adds a Twitch streamer to watchlist             |
+| !rm -twitch      | Stream                         | Twitch login name              | Can Ban                        | Removes a Twitch streamer to watchlist          |
 | !clear-twitch    | Stream                         | None                           | Can Ban                        | Clears Twitch streamer watchlist                |
 | !update-games    | System                         | None                           | Can Ban                        | Updates known game data from the web            |
 
