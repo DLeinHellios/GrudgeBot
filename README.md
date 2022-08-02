@@ -1,6 +1,8 @@
 # GrudgeBot
 
-A bot for the GrudgeMatch Discord server. Does some fun fighting game stuff.
+A chatbot for the GrudgeMatch Discord server. Does some fun fighting game stuff. No longer maintained due to changes with [discord.py](https://github.com/Rapptz/discord.py)
+
+<p align="center"><img src="img/demo.png?raw=true" /></p>
 
 ## Commands
 
@@ -31,8 +33,4 @@ A bot for the GrudgeMatch Discord server. Does some fun fighting game stuff.
 
 [Twitch Client ID and Secret](https://dev.twitch.tv/)
 
-See .env.example
-
-<p align="center">
-    <img src=img/logo.png?raw=true >
-</p>
+See .env.example to add tokens/secrets
